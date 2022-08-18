@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="https://via.placeholder.com/40">
+  
+  <!-- <link href="" t -->
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  
+  <title>Chat App</title>
+  
+  <style>
+    .img-circle{
+      border-radius: 50% !important;
+    }
+    .float-end{
+      float: right !important;
+    }
+    .custom-box{
+      border-radius: 15px;
+    }
+    .b-0{
+      border-color: transparent !important;
+    }
+    .fix-height{
+      max-height: 250px;
+      overflow-y: scroll;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class=" col-md-8 offset-md-2">
+        <div class="card card-secondary mt-5">
+          <div class="card-header">
+            <img src="https://via.placeholder.com/40" class="img-thumbnail img-circle" width="40"> 
+            <b>Subas Nyaupane</b>
+            <small class="float-end">12 min ago</small>
+          </div>
+          <div class="card-body overflow-auto  fix-height">
+            <div id="messages">
+              <!-- <div class="alert alert-warning">
+                No Message Yet..
+              </div> -->
+            </div>
+          </div>
+        </div>
+        <div class="card-body bg-info">
+          <input id="name" class="form-control" placeholder="Name">
+          <br>
+          <textarea id="message" class="form-control" placeholder="Your Message Here"></textarea>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-danger">Cancel</button>
+          <button id="send" class="btn btn-success float-right">Send</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</div>
+
+
+
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+crossorigin="anonymous"></script>
+<script type="text/javascript" src="/socket.io/socket.io.js" ></script>
+<script>
+  var socket = io();
+  
+  socket.on("connect", () => {
+    status.innerText = "Connected";
+    console.log('event: connect | session id: '+ socket.id);
+  });
+  
+  socket.on("connect_error", (err) => {
+    console.log('event: connect_error | reason: '+ err.message);
+  });
+  
+  socket.on("disconnect", (reason) => {
+    status.innerText = "Disconnected";
+    console.log('event: disconnect | reason: '+ reason);
+  });
+  
+  socket.onAny((event, ...args) => {
+    console.log('event: ${event} | arguments: '+args);
+  });
+  
+  
+  
+  $(() => {
+    $("#send").click(()=>{
+      sendMessage({
+        name: $("#name").val(), 
+        message:$("#message").val()});
+        addMessages({
+          name: $("#name").val(), 
+          message:$("#message").val()});
+          $("#name").val('');
+          $("#message").val('');
+        })
+        
+        getMessages()
+        
+      })
+      
+      
+      function addMessages(message){
+        let messageSin = '';
+        messageSin += '<div class="card b-0">';
+          messageSin += '<div class="card-body bg-secondary p-2 text-white custom-box">';
+            messageSin += '<img class="img-circle img-thumbnail" width="30" src="https://via.placeholder.com/30">';
+            messageSin += '&nbsp;<b>'+ message.name +'</b>'
+            messageSin += '<p class="ml-4 p-0 mb-0">'+ message.message +'</p>'
+            messageSin += '</div>';
+            messageSin += '</div>';      
+            $('#messages').append(messageSin);
+            
+            // $("#messages").append('<h4> ${message.name} </h4><p> ${message.message} </p>');
+          }
+          
+          function getMessages(){
+            $.get('http://127.0.0.1:3000/messages', (data) => {
+              data.forEach(addMessages);
+            })
+          }
+          
+          function sendMessage(message){
+            $.post('http://127.0.0.1:3000/messages', message)
+          }
+          
+        </script>
+        <script>
+          $(() => {
+            //           const socket = io('http://127.0.0.1:3000',{
+              //             reconnection: false,
+              //             timeout: 3000,
+              //             cors: {
+                //         origin: "http://127.0.0.1:3000" //<<==domain name for the nodejs server
+                // }
+                //           });
+                
+                
+                
+                
+                
+                // socket.on("connect", () => {
+                  //   status.innerText = "Connected";
+                  //   console.log('event: connect | session id: '+ socket.id);
+                  // });
+                  
+                  // socket.on("connect_error", (err) => {
+                    //   console.log('event: connect_error | reason: '+ err.message);
+                    // });
+                    
+                    // socket.on("disconnect", (reason) => {
+                      //   status.innerText = "Disconnected";
+                      //   console.log('event: disconnect | reason: '+ reason);
+                      // });
+                      
+                      // socket.onAny((event, ...args) => {
+                        //   console.log('event: ${event} | arguments: '+args);
+                        // });
+                      });
+                    </script>
+                  </body>
+                  
+                  </html>
